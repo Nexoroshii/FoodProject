@@ -322,4 +322,7 @@ window.addEventListener("DOMContentLoaded", () => {
   // })
   //   .then((response) => response.json())
   //   .then((json) => console.log(json));
+
+
+  console.log('upgrade,people,upgrade');
 });
