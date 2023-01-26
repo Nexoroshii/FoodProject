@@ -1,87 +1,79 @@
-function forms(){
- // forms
+import { closeModal, openModal } from "./modal";
+import { postData } from "../services/services";
 
- const forms = document.querySelectorAll("form");
+function forms(formSelector, modalTimerId) {
+  // forms
 
- const message = {
-   loading: "img/form/spinner.svg",
-   succes: "Thanks, we will call you",
-   failure: "Something went wrong",
- };
+  const forms = document.querySelectorAll(formSelector);
 
- forms.forEach((item) => {
-   bindPostData(item);
- });
+  const message = {
+    loading: "img/form/spinner.svg",
+    succes: "Thanks, we will call you",
+    failure: "Something went wrong",
+  };
 
- const postData = async (url, data) => {
-   const res = await fetch(url, {
-     method: "POST",
-     headers: {
-       "Content-type": "application/json",
-     },
-     body: data,
-   });
-   return await res.json();
- };
+  forms.forEach((item) => {
+    bindPostData(item);
+  });
 
- function bindPostData(form) {
-   form.addEventListener("submit", (e) => {
-     e.preventDefault();
+  function bindPostData(form) {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
 
-     let statusMessage = document.createElement("img");
-     statusMessage.src = message.loading;
-     statusMessage.style.cssText = `
+      let statusMessage = document.createElement("img");
+      statusMessage.src = message.loading;
+      statusMessage.style.cssText = `
        display: block;
        margin: 0 auto;
      `;
-   
-     form.insertAdjacentElement("afterend", statusMessage);
-     const formData = new FormData(form);
 
-     const json = JSON.stringify(Object.fromEntries(formData.entries()));
+      form.insertAdjacentElement("afterend", statusMessage);
+      const formData = new FormData(form);
 
-     postData("http://localhost:3000/requests", json)
-       .then((data) => {
-         console.log(data);
-         showThanksModaL(message.succes);
+      const json = JSON.stringify(Object.fromEntries(formData.entries()));
 
-         statusMessage.remove();
-       })
-       .catch(() => {
-         showThanksModaL(message.failure);
-       })
-       .finally(() => {
-         form.reset();
-       });
-   });
- }
+      postData("http://localhost:3000/requests", json)
+        .then((data) => {
+          console.log(data);
+          showThanksModaL(message.succes);
 
- function showThanksModaL(message) {
-   const previousModalDialog = document.querySelector(".modal__dialog");
+          statusMessage.remove();
+        })
+        .catch(() => {
+          showThanksModaL(message.failure);
+        })
+        .finally(() => {
+          form.reset();
+        });
+    });
+  }
 
-   previousModalDialog.classList.add("hide");
-   openModal();
+  function showThanksModaL(message) {
+    const previousModalDialog = document.querySelector(".modal__dialog");
 
-   const thanksModal = document.createElement("div");
-   thanksModal.classList.add("modal__dialog");
-   thanksModal.innerHTML = `
+    previousModalDialog.classList.add("hide");
+    openModal(".modal", modalTimerId);
+
+    const thanksModal = document.createElement("div");
+    thanksModal.classList.add("modal__dialog");
+    thanksModal.innerHTML = `
      <div class="modal__content">
        <div class="modal__close" data-close>×</div>
        <div class="modal__title">${message}</div>
      </div>
    `;
 
-   document.querySelector(".modal").append(thanksModal);
-   setTimeout(() => {
-     thanksModal.remove();
-     previousModalDialog.classList.add("show");
-     previousModalDialog.classList.remove("hide");
-     closeModal();
-   }, 4000);
- }
- fetch("http://localhost:3000/menu")
-   .then((data) => data.json())
-   .then((res) => console.log(res));
+    document.querySelector(".modal").append(thanksModal);
+    setTimeout(() => {
+      thanksModal.remove();
+      previousModalDialog.classList.add("show");
+      previousModalDialog.classList.remove("hide");
+      closeModal(".modal");
+    }, 4000);
+  }
+  //  fetch("http://localhost:3000/menu")
+  //    .then((data) => data.json())
+  //    .then((res) => console.log(res));
 }
 
-module.exports = forms;
+export default forms;
